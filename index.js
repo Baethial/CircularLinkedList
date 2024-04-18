@@ -100,48 +100,55 @@ class Node {
     constructor(data) {
         this.data = data; //data that the node contains
         this.next = null; //pointer to the next node
-        this.prev = null; //pointer to the previous node
+        
+    }
+    getNext() {
+        return this.next;
     }
 }
 
+//There are 2 types of nodes:
+//Client Node
 class ClientNode extends Node {
-    constructor(data, name, age) {
-        super(data);
-        this.name = name;
-        this.age = age;
+    constructor(data, tranNum) {
+        super(data); 
+        this.tranNum = tranNum; //Contains the number of transactions the client needs the cashier to process
     }
-
-    getClientDetails() {
-        return `Name: ${this.name}, Age: ${this.age}`;
+    //Gets the number of transactions the client needs the cashier to process
+    getTranNumb() {
+        return this.tranNum;
+    }
+    //Sets the number of transactions the client needs the cashier to process
+    setTranNumb(tranNum) {
+        this.tranNum = tranNum;
+    }
+    //Removes from the number of transactions the client needs the cashier to process
+    removeTransactions(num) {
+        if(num <= 0) return;
+        if(this.tranNum <= num) {
+            this.tranNum = 0;
+        } else {
+            this.tranNum -= num;
+        }
     }
 }
 
+//Cashier Node
 class CashierNode extends Node {
     constructor(data, maxTansNumber) {
         super(data);
-        this.maxTansNumber = maxTansNumber;
-    }
-
-    getCashierDetails() {
-        return `Maximum number od transactions per client: ${this.maxTansNumber}`;
-    }
-
-    processTransactions() {
-        if (this.next !== null) {
-
-        }
+        this.maxTansNumber = maxTansNumber; //The maximum number of transactions that can process per client each time
     }
 }
 
-// CircularDoublyLinkedList class
-class CircularDoublyLinkedList {
+// CircularSinglyLinkedList class
+class CircularSinglyLinkedList {
     constructor() {
         const data = {
-            name: "Cashier Saskia",
+            name: "Cashier",
             document: "1234"
         }
-        const maxTansNumber = 5; //Max number of transactions per client
-        const cashier = new CashierNode(data, maxTansNumber);
+        this.cashier = new CashierNode(data, 5); //Max number of transactions per client
         this.head = cashier; 
         this.tail = null;
     }
@@ -150,68 +157,82 @@ class CircularDoublyLinkedList {
         return this.tail === null;
     }
 
+    processTransactions() {
+        let client = this.next;
+        if (client == null) {
+            console.log("Queue is empty!");
+        } else {
+            let tranNumber = client.getTranNumb();
+            if (tranNumber > this.maxTansNumber) {
+                client.removeTransactions(this.maxTansNumber);
+                tranNumber -= this.maxTansNumber;
+                this.moveFirstToEnd();
+            } else {
+                client.removeTransactions(tranNumber);
+                this.deleteAtStart();
+            }
+            nextClient.remo
+        }
+    }
+
     insertAtEnd(data) {
         const newNode = new Node(data);
         if (this.isEmpty()) {
             this.head = newNode;
-            this.tail = newNode;
-            newNode.next = newNode;
-            newNode.prev = newNode;
-        } else {
-            newNode.prev = this.tail;
             newNode.next = this.head;
-            this.tail.next = newNode;
-            this.head.prev = newNode;
-            this.tail = newNode;
+        } else {
+            let current = this.head;
+            while (current.next !== this.head) {
+                current = current.next;
+            }
+            current.next = newNode;
+            newNode.next = this.head;
         }
     }
 
-    // insertAtBeginning(data) {
-    //     const newNode = new Node(data);
-    //     if (this.isEmpty()) {
-    //         this.head = newNode;
-    //         this.tail = newNode;
-    //         newNode.next = newNode;
-    //         newNode.prev = newNode;
-    //     } else {
-    //         newNode.next = this.head;
-    //         newNode.prev = this.tail;
-    //         this.head.prev = newNode;
-    //         this.tail.next = newNode;
-    //         this.head = newNode;
-    //     }
-    // }
-
-    // deleteAtEnd() {
-    //     if (this.isEmpty()) {
-    //         console.log("List is empty");
-    //         return;
-    //     }
-
-    //     if (this.head === this.tail) {
-    //         this.head = null;
-    //         this.tail = null;
-    //     } else {
-    //         this.tail = this.tail.prev;
-    //         this.tail.next = this.head;
-    //         this.head.prev = this.tail;
-    //     }
-    // }
-
-    deleteAtBeginning() {
+    deleteAtStart() {
         if (this.isEmpty()) {
             console.log("List is empty");
             return;
         }
 
-        if (this.head === this.tail) {
-            this.head = null;
-            this.tail = null;
-        } else {
-            this.head = this.head.next;
-            this.head.prev = this.tail;
-            this.tail.next = this.head;
+        let firstNode = this.head.next;
+        if (firstNode.next === this.head.next) {
+            // Only one node in the list
+            console.log("Only one node in the list. Cannot remove.");
+            return;
         }
+
+        let current = firstNode;
+        while (current.next !== firstNode) {
+            current = current.next;
+        }
+
+        this.head.next = firstNode.next;
+        current.next = this.head.next;
+    }
+
+    moveFirstToEnd() {
+        if (this.isEmpty()) {
+            console.log("List is empty");
+            return;
+        }
+
+        let firstNode = this.head.next;
+        if (firstNode.next === this.head.next) {
+            // There's only one node in the list
+            console.log("Only one node in the list. No need to move.");
+            return;
+        }
+
+        let current = firstNode;
+        while (current.next !== this.head.next) {
+            current = current.next;
+        }
+
+        this.head.next = firstNode.next;
+        current.next = firstNode;
+        firstNode.next = this.head.next;
     }
 
     display() {
@@ -219,7 +240,6 @@ class CircularDoublyLinkedList {
             console.log("List is empty");
             return;
         }
-
         let current = this.head;
         do {
             console.log(current.data);
@@ -229,10 +249,9 @@ class CircularDoublyLinkedList {
 }
 
 // Example usage:
-const cll = new CircularDoublyLinkedList();
-cll.insertAtEnd(1);
-cll.insertAtEnd(2);
-cll.insertAtBeginning(0);
-cll.deleteAtEnd();
-cll.deleteAtBeginning();
-cll.display();
+const csl = new CircularSinglyLinkedList();
+csl.insertAtEnd(1);
+csl.insertAtEnd(2);
+csl.insertAtEnd(3);
+csl.deleteAtEnd();
+csl.display();
