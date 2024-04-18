@@ -1,98 +1,3 @@
-var buttonColors = ["red", "blue", "green", "yellow"];
-var gamePattern = [];
-var userClickedPattern = [];
-var started = false;
-var level = 0;
-
-//Starts the game with a keydown
-$(document).on("keydown", function () {
-    if (!started) {
-        started = true;
-        $("#level-title").html("Processing")
-        setTimeout(function () {
-            nextSecuence();
-        }, 300);
-    }
-})
-
-//function to reset the game
-function resetGame() {
-    userClickedPattern = [];
-    gamePattern = [];
-    started = false;
-    level = 0;
-    $("#level-title").html("Press A Key to Start");
-}
-
-//function to play a sound
-function playSound(name) {
-    var audio = new Audio("sounds/" + name + ".mp3");
-    audio.play();
-}
-
-//function to animate the pressed button
-function animatePress(currentColor) {
-    $("#" + currentColor).addClass("pressed");
-    setTimeout(function () {
-        $("#" + currentColor).removeClass("pressed");
-    }, 100);
-}
-
-//function to animate aa mistake in the secuence
-function animateMistake() {
-    $("#level-title").html("Game Over");
-    $("body").addClass("game-over");
-    playSound("wrong");
-    setTimeout(function () {
-        $("body").removeClass("game-over");
-        resetGame();
-    }, 300);
-}
-
-//function to add actions to the buttons
-$(".btn").on("click", function (event) {
-    if (started) {
-        var userChosenColor = event.target.id;
-        userClickedPattern.push(userChosenColor);
-        playSound(userChosenColor);
-        animatePress(userChosenColor);
-
-        if (!validateSecuence()) {
-            animateMistake();
-        } else if (userClickedPattern.length === gamePattern.length) {
-            userClickedPattern = [];
-            setTimeout(function () {
-                nextSecuence();
-            }, 300);
-        }
-    };
-});
-
-//function to validate the secuence
-function validateSecuence() {
-    let i = 0;
-    while (i < userClickedPattern.length) {
-        if (userClickedPattern[i] !== gamePattern[i]) {
-            console.log("It breaks!")
-            return false;
-        }
-        i++;
-    }
-    console.log("Goes through!")
-    return true;
-}
-
-//function to generate the next step on the secuence
-function nextSecuence() {
-    var randomNumber = Math.floor(Math.random() * 4);
-    var randomChosenColour = buttonColors[randomNumber];
-    gamePattern.push(randomChosenColour);
-    $("#" + randomChosenColour).fadeOut(100).fadeIn(100);
-    playSound(randomChosenColour);
-    level++;
-    $("#level-title").html("Level " + level);
-}
-
 //Implementation of the Circular Doubly Linked List
 
 //Node class
@@ -106,17 +11,28 @@ class Node {
 }
 
 class ClientNode extends Node {
-    constructor(data, name, age) {
+    constructor(data, name, age, transactionNum) {
         super(data);
         this.name = name;
         this.age = age;
+        let min =1;
+        let max =30;
+        this.transactionNum = Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     getClientDetails() {
-        return `Name: ${this.name}, Age: ${this.age}`;
+        return `Name: ${this.name}, Age: ${this.age}, Numero de transacciones: ${this.transactionNum}`;
+    }
+
+    getClientTransactionNum() {
+        return this.transactionNum;
     }
 }
+//const node = new ClientNode();
+//console.log(node.getClientDetails());
 
+const node = new ClientNode();
+console.log(node.getClientTransactionNum());
 class CashierNode extends Node {
     constructor(data, maxTansNumber) {
         super(data);
@@ -146,6 +62,13 @@ class CircularDoublyLinkedList {
         this.head = cashier; 
         this.tail = null;
     }
+
+    getMaxTansNumber() {
+        let number = this.maxTansNumber;
+        return `El maximo numero de transacciones permitidas es ${number}`;
+    }
+
+    
 
     isEmpty() {
         return this.tail === null;
@@ -229,26 +152,91 @@ class CircularDoublyLinkedList {
     }
     
     nodeCount() {
-        var number = 0;
+        let nodesNumber = 0;
         let current = this.head;
         if (this.isEmpty()) {
             console.log("List is empty");
             return;
         }
         do {
-            number= number + 1;
+            nodesNumber= nodesNumber + 1;
             current = current.next;
         } while (current !== this.head);
-        var showText = document.getElementById("nodeTotal");
-        showText.textContent = "uwu" + number;
-        console.log(number);
+        return nodesNumber;
+
+        
+    }
+
+    informationDivDisplay(){
+
+        //Div state of the queue
+        let queueState
+        let showText
+        if (this.isEmpty()) {
+            queueState = "Actualmente no se encuentran procesos activos"
+            console.log("List is empty");
+        }
+        queueState = "Actualmente se encuentran " + cll.nodeCount() + " Procesos activos";
+        showText = document.getElementById("queueState");
+        showText.textContent = queueState;
+
+        //Div Numbrer of nodes
+        let nodesNumber= cll.nodeCount()
+        console.log("UWU" + nodesNumber);
+        showText = document.getElementById("nodeTotal");
+        showText.textContent = nodesNumber;
+
+        //Div max number of transactions
+        
+        let maxTransactions = cll.getMaxTansNumber();;
+        showText = document.getElementById("maxTransactions");
+        showText.textContent = maxTransactions;
+
+
     }
 
 
 }
 
+var nodeId = 0;
+function newTransactionDiv() {
+    
+    // Crear un nuevo div
+    let newDiv = document.createElement('div');
+    newDiv.classList.add('newtransactionDiv');
+    const cln = new ClientNode();
+    cll.insertAtEnd(nodeId);
+
+    
+    let transactionNum = cll.getClientTransactionNum
+    newDiv.textContent = `Id: ${nodeId} Numero de transacciones a realizar ${cln.getClientTransactionNum()}`;
+    nodeId ++;
+  
+    // Agregar el nuevo div al contenedor
+    let transactionQueue = document.getElementById('transactionQueue');
+    transactionQueue.appendChild(newDiv);
+    
+  }
+
+  const cln = new ClientNode();
+  function updateDivs() {
+    let divs = document.querySelectorAll('newtransactionDiv');
+    divs.forEach(
+        function(div) {
+        let actualValue = cln.getClientTransactionNum();
+        let newValue = actualValue - 5;
+      
+        // Actualizar el contenido del div con el nuevo valor
+        div.textContent = newValue;
+        console.log("owo de prueba");
+    });
+  }
+  setInterval(updateDivs, 1000);
+
 // Example usage:
 const cll = new CircularDoublyLinkedList();
+
+
 cll.insertAtEnd(1);
 cll.insertAtEnd(2);
 cll.insertAtEnd(5);
@@ -259,5 +247,4 @@ cll.deleteAtEnd();
 cll.deleteAtBeginning();
 cll.display();
 cll.nodeCount();
-
-//
+cll.informationDivDisplay();
