@@ -1,97 +1,97 @@
-var buttonColors = ["red", "blue", "green", "yellow"];
-var gamePattern = [];
-var userClickedPattern = [];
-var started = false;
-var level = 0;
+// var buttonColors = ["red", "blue", "green", "yellow"];
+// var gamePattern = [];
+// var userClickedPattern = [];
+// var started = false;
+// var level = 0;
 
-//Starts the game with a keydown
-$(document).on("keydown", function () {
-    if (!started) {
-        started = true;
-        $("#level-title").html("Processing")
-        setTimeout(function () {
-            nextSecuence();
-        }, 300);
-    }
-})
+// //Starts the game with a keydown
+// $(document).on("keydown", function () {
+//     if (!started) {
+//         started = true;
+//         $("#level-title").html("Processing")
+//         setTimeout(function () {
+//             nextSecuence();
+//         }, 300);
+//     }
+// })
 
-//function to reset the game
-function resetGame() {
-    userClickedPattern = [];
-    gamePattern = [];
-    started = false;
-    level = 0;
-    $("#level-title").html("Press A Key to Start");
-}
+// //function to reset the game
+// function resetGame() {
+//     userClickedPattern = [];
+//     gamePattern = [];
+//     started = false;
+//     level = 0;
+//     $("#level-title").html("Press A Key to Start");
+// }
 
-//function to play a sound
-function playSound(name) {
-    var audio = new Audio("sounds/" + name + ".mp3");
-    audio.play();
-}
+// //function to play a sound
+// function playSound(name) {
+//     var audio = new Audio("sounds/" + name + ".mp3");
+//     audio.play();
+// }
 
-//function to animate the pressed button
-function animatePress(currentColor) {
-    $("#" + currentColor).addClass("pressed");
-    setTimeout(function () {
-        $("#" + currentColor).removeClass("pressed");
-    }, 100);
-}
+// //function to animate the pressed button
+// function animatePress(currentColor) {
+//     $("#" + currentColor).addClass("pressed");
+//     setTimeout(function () {
+//         $("#" + currentColor).removeClass("pressed");
+//     }, 100);
+// }
 
-//function to animate aa mistake in the secuence
-function animateMistake() {
-    $("#level-title").html("Game Over");
-    $("body").addClass("game-over");
-    playSound("wrong");
-    setTimeout(function () {
-        $("body").removeClass("game-over");
-        resetGame();
-    }, 300);
-}
+// //function to animate aa mistake in the secuence
+// function animateMistake() {
+//     $("#level-title").html("Game Over");
+//     $("body").addClass("game-over");
+//     playSound("wrong");
+//     setTimeout(function () {
+//         $("body").removeClass("game-over");
+//         resetGame();
+//     }, 300);
+// }
 
-//function to add actions to the buttons
-$(".btn").on("click", function (event) {
-    if (started) {
-        var userChosenColor = event.target.id;
-        userClickedPattern.push(userChosenColor);
-        playSound(userChosenColor);
-        animatePress(userChosenColor);
+// //function to add actions to the buttons
+// $(".btn").on("click", function (event) {
+//     if (started) {
+//         var userChosenColor = event.target.id;
+//         userClickedPattern.push(userChosenColor);
+//         playSound(userChosenColor);
+//         animatePress(userChosenColor);
 
-        if (!validateSecuence()) {
-            animateMistake();
-        } else if (userClickedPattern.length === gamePattern.length) {
-            userClickedPattern = [];
-            setTimeout(function () {
-                nextSecuence();
-            }, 300);
-        }
-    };
-});
+//         if (!validateSecuence()) {
+//             animateMistake();
+//         } else if (userClickedPattern.length === gamePattern.length) {
+//             userClickedPattern = [];
+//             setTimeout(function () {
+//                 nextSecuence();
+//             }, 300);
+//         }
+//     };
+// });
 
-//function to validate the secuence
-function validateSecuence() {
-    let i = 0;
-    while (i < userClickedPattern.length) {
-        if (userClickedPattern[i] !== gamePattern[i]) {
-            console.log("It breaks!")
-            return false;
-        }
-        i++;
-    }
-    console.log("Goes through!")
-    return true;
-}
+// //function to validate the secuence
+// function validateSecuence() {
+//     let i = 0;
+//     while (i < userClickedPattern.length) {
+//         if (userClickedPattern[i] !== gamePattern[i]) {
+//             console.log("It breaks!")
+//             return false;
+//         }
+//         i++;
+//     }
+//     console.log("Goes through!")
+//     return true;
+// }
 
-//function to generate the next step on the secuence
-function nextSecuence() {
-    var randomNumber = Math.floor(Math.random() * 4);
-    var randomChosenColour = buttonColors[randomNumber];
-    gamePattern.push(randomChosenColour);
-    $("#" + randomChosenColour).fadeOut(100).fadeIn(100);
-    playSound(randomChosenColour);
-    level++;
-    $("#level-title").html("Level " + level);
-}
+// //function to generate the next step on the secuence
+// function nextSecuence() {
+//     var randomNumber = Math.floor(Math.random() * 4);
+//     var randomChosenColour = buttonColors[randomNumber];
+//     gamePattern.push(randomChosenColour);
+//     $("#" + randomChosenColour).fadeOut(100).fadeIn(100);
+//     playSound(randomChosenColour);
+//     level++;
+//     $("#level-title").html("Level " + level);
+// }
 
 //Implementation of the Circular Doubly Linked List
 
@@ -104,6 +104,12 @@ class Node {
     }
     getNext() {
         return this.next;
+    }
+    setNext(next) {
+        this.next = next;
+    }
+    getData() {
+        return this.data;
     }
 }
 
@@ -137,19 +143,17 @@ class ClientNode extends Node {
 class CashierNode extends Node {
     constructor(data, maxTansNumber) {
         super(data);
-        this.maxTansNumber = maxTansNumber; //The maximum number of transactions that can process per client each time
+        this.maxTranNumber = maxTansNumber; //The maximum number of transactions that can process per client each time
+    }
+    getMaxTranNumb() {
+        return this.maxTranNumber;
     }
 }
 
 // CircularSinglyLinkedList class
 class CircularSinglyLinkedList {
     constructor() {
-        const data = {
-            name: "Cashier",
-            document: "1234"
-        }
-        this.cashier = new CashierNode(data, 5); //Max number of transactions per client
-        this.head = cashier; 
+        this.head = new CashierNode("Cashier", 5); //Max number of transactions per client
         this.tail = null;
     }
 
@@ -158,58 +162,58 @@ class CircularSinglyLinkedList {
     }
 
     processTransactions() {
-        let client = this.next;
-        if (client == null) {
+        let client = this.head.next;
+        if (client == this.head) {
             console.log("Queue is empty!");
         } else {
             let tranNumber = client.getTranNumb();
-            if (tranNumber > this.maxTansNumber) {
-                client.removeTransactions(this.maxTansNumber);
-                tranNumber -= this.maxTansNumber;
+            console.log("Client " + client.getData());
+            console.log("Number of transactions " + client.getTranNumb());
+            let maxTranNumber = this.head.getMaxTranNumb();
+            if (tranNumber > maxTranNumber) {
+                client.removeTransactions(maxTranNumber);
+                tranNumber -= maxTranNumber;
                 this.moveFirstToEnd();
+                console.log(maxTranNumber + " transactions were processed, " 
+                + tranNumber + " transactions remaining. Client moved to end of queue");
             } else {
                 client.removeTransactions(tranNumber);
                 this.deleteAtStart();
+                console.log("All " + tranNumber + " transactions were processed, client removed");
             }
-            nextClient.remo
         }
     }
 
-    insertAtEnd(data) {
-        const newNode = new Node(data);
+    insertAtEnd(data, tranNum) {
+        const newNode = new ClientNode(data, tranNum);
         if (this.isEmpty()) {
-            this.head = newNode;
-            newNode.next = this.head;
+            this.tail = newNode;
+            this.head.setNext(newNode);
+            newNode.setNext(this.head);
         } else {
-            let current = this.head;
-            while (current.next !== this.head) {
+            let current = this.head.next; 
+            while (current.next !== this.head) { //Before the tail
                 current = current.next;
             }
-            current.next = newNode;
-            newNode.next = this.head;
+            this.tail = newNode;
+            current.setNext(newNode);
+            newNode.setNext(this.head);
         }
     }
 
+    //missing consideration when deleting last client
     deleteAtStart() {
         if (this.isEmpty()) {
             console.log("List is empty");
             return;
         }
-
         let firstNode = this.head.next;
-        if (firstNode.next === this.head.next) {
-            // Only one node in the list
-            console.log("Only one node in the list. Cannot remove.");
-            return;
+        if (firstNode.next == this.head) {
+            this.tail = null;
         }
-
-        let current = firstNode;
-        while (current.next !== firstNode) {
-            current = current.next;
-        }
-
-        this.head.next = firstNode.next;
-        current.next = this.head.next;
+        let nextNode = firstNode.getNext();
+        firstNode.setNext(null);
+        this.head.setNext(nextNode);
     }
 
     moveFirstToEnd() {
@@ -217,22 +221,20 @@ class CircularSinglyLinkedList {
             console.log("List is empty");
             return;
         }
-
         let firstNode = this.head.next;
-        if (firstNode.next === this.head.next) {
+        if (firstNode.next === this.head) {
             // There's only one node in the list
             console.log("Only one node in the list. No need to move.");
             return;
         }
-
-        let current = firstNode;
-        while (current.next !== this.head.next) {
-            current = current.next;
-        }
-
-        this.head.next = firstNode.next;
-        current.next = firstNode;
-        firstNode.next = this.head.next;
+        //Remove from first position
+        let nextNode = firstNode.getNext();
+        this.head.setNext(nextNode);
+        //Insert into last position
+        let prevNode = this.tail;
+        prevNode.setNext(firstNode);
+        firstNode.setNext(this.head);
+        this.tail = firstNode;
     }
 
     display() {
@@ -240,18 +242,27 @@ class CircularSinglyLinkedList {
             console.log("List is empty");
             return;
         }
-        let current = this.head;
+
+        let current = this.head.next;
         do {
-            console.log(current.data);
-            current = current.next;
+            if (current instanceof ClientNode) {
+                console.log(current.getData() + ": " + current.getTranNumb());
+                current = current.next;
+            }
         } while (current !== this.head);
     }
 }
 
 // Example usage:
 const csl = new CircularSinglyLinkedList();
-csl.insertAtEnd(1);
-csl.insertAtEnd(2);
-csl.insertAtEnd(3);
-csl.deleteAtEnd();
+csl.insertAtEnd("Client1", 1);
+csl.insertAtEnd("Client2", 7);
+csl.insertAtEnd("Client3", 2);
+csl.insertAtEnd("Client4", 9);
+csl.insertAtEnd("Client5", 7);
+csl.insertAtEnd("Client6", 2);
 csl.display();
+while(!csl.isEmpty()) {
+    csl.processTransactions();
+    //csl.display();
+}
