@@ -72,8 +72,18 @@ class CircularSinglyLinkedList {
             console.log("Queue is empty!");
         } else {
             let tranNumber = client.getTranNumb();
-            console.log("Client " + client.getData());
+            console.log(client.getData());
+
+            let actualClient = client.getData();
+            let showText = document.getElementById("actualClient");
+            showText.textContent = actualClient;
+            
+
             console.log("Number of transactions " + client.getTranNumb());
+            let numTransactions = client.getTranNumb() + " Transactions left";
+            showText = document.getElementById("numTransactions");
+            showText.textContent = numTransactions;
+            
             let maxTranNumber = this.head.getMaxTranNumb();
             if (tranNumber > maxTranNumber) {
                 client.removeTransactions(maxTranNumber);
@@ -81,10 +91,19 @@ class CircularSinglyLinkedList {
                 this.moveFirstToEnd();
                 console.log(maxTranNumber + " transactions were processed, " 
                 + tranNumber + " transactions remaining. Client moved to end of queue");
+
+                let queueState = maxTranNumber + " transactions were processed, " 
+                + tranNumber + " transactions remaining. Client moved to end of queue";
+                let showText = document.getElementById("queueState");
+                showText.textContent = queueState;
             } else {
                 client.removeTransactions(tranNumber);
                 this.deleteAtStart();
                 console.log("All " + tranNumber + " transactions were processed, client removed");
+
+                let queueState = "All " + tranNumber + " transactions were processed, client removed";
+                let showText = document.getElementById("queueState");
+                showText.textContent = queueState;
             }
         }
     }
@@ -155,6 +174,21 @@ class CircularSinglyLinkedList {
                 current = current.next;
             }
         } while (current !== this.head);
+    }
+
+    nodeCount() {
+        let nodesNumber = 0;
+        let current = this.head;
+        if (this.isEmpty()) {
+            console.log("List is empty");
+            return;
+        }
+        do {
+            nodesNumber= nodesNumber + 1;
+            current = current.next;
+        } while (current !== this.head);
+        return nodesNumber;
+
     }
 }
 
@@ -231,10 +265,22 @@ function insertClientsWithProbability(csl) {
         const transactions = getRandomInt(1, 15);
         csl.insertAtEnd(clientName, transactions);
         console.log(`Added client: ${clientName}, Transactions: ${transactions}`);
+
+        let newClientsAdd = `Added client: ${clientName}, Transactions: ${transactions}`;
+        let showText = document.getElementById("newClientsAdd");
+        showText.textContent = newClientsAdd;
+
+
     } else {
         console.log("No client added in this step.");
+
+        let newClientsAdd = "No client added in this step.";
+        let showText = document.getElementById("newClientsAdd");
+        showText.textContent = newClientsAdd;
     }
 }
+
+
 
 // Example usage:
 csl.insertAtEnd("Client A1", 1);
@@ -243,6 +289,7 @@ csl.insertAtEnd("Client C3", 2);
 csl.insertAtEnd("Client D4", 9);
 csl.insertAtEnd("Client E5", 7);
 csl.insertAtEnd("Client F6", 2);
+csl.nodeCount();
 
 // Initial animation update
 updateAnimation();

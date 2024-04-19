@@ -1,53 +1,88 @@
-body {
+/* CSS styles for the boxes */
+body{
+  background-color: #EBDBDB;
+  font-family: "Arial Rounded MT Bold", sans-serif; 
+}
+
+.topLine{
+  background-color: #0095DD; 
+  height: 5px;
+  width: 100%;
+  margin: -10px -20px 0;
+  padding: 10px 20px; 
+  }
+  
+  .topDiv{
+  color: #FEF2BF; 
+  background-color: #0095DD; 
+  height: 25px;
+  width: 150px;
+  right: 20px;
+  top: 10px;
+  float: right;
+  position: absolute;
+  font-weight: bold; 
+  font-size: 20px; 
+  border-radius: 7px;
   text-align: center;
-  background-color: #011F3F;
+  }
+
+.information{  
+  background-color: #0095DD;
+  border: 2px solid #000000;
+  width: 1000px;
+  height: 300px;
+  border-radius: 10px;
+  margin: 0 auto; 
+  margin-top: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px; 
 }
 
-#level-title {
-  font-family: 'Press Start 2P', cursive;
-  font-size: 3rem;
-  margin:  5%;
-  color: #FEF2BF;
+.information > .info_box{
+background-color: #FEF2BF;
+border: 2px solid #636363;
+width: calc(70% - 27px);
+height: calc(20% - 22px);
+border-radius: 10px;
+margin: 5px; 
+padding-left: 10px;
+gap: 10px; 
 }
 
-.container {
-  display: block;
-  width: 50%;
-  margin: auto;
-
+.information > .label{
+background-color: #FEF2BF;
+border: 2px solid #636363;
+width: calc(30% - 32px);
+height: calc(20% - 22px);
+border-radius: 10px;
+margin: 5px; 
+font-weight: bold;
+padding-left: 10px;
+vertical-align: top;
+gap: 10px; 
 }
 
-.btn {
-  margin: 25px;
+.box {
+  background-color: #ccc;
+  border: 2px solid #636363;
+  width: 150px;
+  height: 50px;
+  margin: 5px;
   display: inline-block;
-  height: 200px;
-  width: 200px;
-  border: 10px solid black;
-  border-radius: 20%;
+  text-align: center;
+  line-height: 50px;
+  border-radius: 10px;
+  margin-top: 25px;
 }
 
-.game-over {
-  background-color: red;
-  opacity: 0.8;
-}
-
-.red {
-  background-color: red;
-}
-
-.green {
-  background-color: green;
-}
-
-.blue {
-  background-color: blue;
-}
-
-.yellow {
-  background-color: yellow;
-}
-
-.pressed {
-  box-shadow: 0 0 20px white;
-  background-color: grey;
+.cashier-box {
+  background-color: #0095DD;
+  border: 2px solid #000000;
+  border-radius: 10px;
+  margin-top: 25px;
+  font-weight: bold;
 }
