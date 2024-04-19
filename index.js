@@ -1,98 +1,3 @@
-// var buttonColors = ["red", "blue", "green", "yellow"];
-// var gamePattern = [];
-// var userClickedPattern = [];
-// var started = false;
-// var level = 0;
-
-// //Starts the game with a keydown
-// $(document).on("keydown", function () {
-//     if (!started) {
-//         started = true;
-//         $("#level-title").html("Processing")
-//         setTimeout(function () {
-//             nextSecuence();
-//         }, 300);
-//     }
-// })
-
-// //function to reset the game
-// function resetGame() {
-//     userClickedPattern = [];
-//     gamePattern = [];
-//     started = false;
-//     level = 0;
-//     $("#level-title").html("Press A Key to Start");
-// }
-
-// //function to play a sound
-// function playSound(name) {
-//     var audio = new Audio("sounds/" + name + ".mp3");
-//     audio.play();
-// }
-
-// //function to animate the pressed button
-// function animatePress(currentColor) {
-//     $("#" + currentColor).addClass("pressed");
-//     setTimeout(function () {
-//         $("#" + currentColor).removeClass("pressed");
-//     }, 100);
-// }
-
-// //function to animate aa mistake in the secuence
-// function animateMistake() {
-//     $("#level-title").html("Game Over");
-//     $("body").addClass("game-over");
-//     playSound("wrong");
-//     setTimeout(function () {
-//         $("body").removeClass("game-over");
-//         resetGame();
-//     }, 300);
-// }
-
-// //function to add actions to the buttons
-// $(".btn").on("click", function (event) {
-//     if (started) {
-//         var userChosenColor = event.target.id;
-//         userClickedPattern.push(userChosenColor);
-//         playSound(userChosenColor);
-//         animatePress(userChosenColor);
-
-//         if (!validateSecuence()) {
-//             animateMistake();
-//         } else if (userClickedPattern.length === gamePattern.length) {
-//             userClickedPattern = [];
-//             setTimeout(function () {
-//                 nextSecuence();
-//             }, 300);
-//         }
-//     };
-// });
-
-// //function to validate the secuence
-// function validateSecuence() {
-//     let i = 0;
-//     while (i < userClickedPattern.length) {
-//         if (userClickedPattern[i] !== gamePattern[i]) {
-//             console.log("It breaks!")
-//             return false;
-//         }
-//         i++;
-//     }
-//     console.log("Goes through!")
-//     return true;
-// }
-
-// //function to generate the next step on the secuence
-// function nextSecuence() {
-//     var randomNumber = Math.floor(Math.random() * 4);
-//     var randomChosenColour = buttonColors[randomNumber];
-//     gamePattern.push(randomChosenColour);
-//     $("#" + randomChosenColour).fadeOut(100).fadeIn(100);
-//     playSound(randomChosenColour);
-//     level++;
-//     $("#level-title").html("Level " + level);
-// }
-
 //Implementation of the Circular Doubly Linked List
 
 //Node class
@@ -253,16 +158,94 @@ class CircularSinglyLinkedList {
     }
 }
 
-// Example usage:
+// Create a CircularSinglyLinkedList instance
 const csl = new CircularSinglyLinkedList();
-csl.insertAtEnd("Client1", 1);
-csl.insertAtEnd("Client2", 7);
-csl.insertAtEnd("Client3", 2);
-csl.insertAtEnd("Client4", 9);
-csl.insertAtEnd("Client5", 7);
-csl.insertAtEnd("Client6", 2);
-csl.display();
-while(!csl.isEmpty()) {
-    csl.processTransactions();
-    //csl.display();
+
+// Function to update the animation display
+function updateAnimation() {
+    const animationContainer = document.getElementById("animation-container");
+    animationContainer.innerHTML = ""; // Clear existing content
+
+    // Add the cashier box
+    const cashierBox = document.createElement("div");
+    cashierBox.classList.add("box", "cashier-box");
+    cashierBox.textContent = "Cashier";
+    animationContainer.appendChild(cashierBox);
+
+    // Display client boxes
+    let current = csl.head.next;
+    while (current !== csl.head) {
+        const clientBox = document.createElement("div");
+        clientBox.classList.add("box");
+        if (current instanceof ClientNode) {
+            clientBox.textContent = `${current.getData()} (${current.getTranNumb()})`;
+        }
+        animationContainer.appendChild(clientBox);
+        current = current.next;
+    }
 }
+
+// Function to process transactions with a delay
+function processTransactionsWithDelay() {
+
+    insertClientsWithProbability(csl);
+
+    if (csl.isEmpty()) {
+        console.log("Queue is empty");
+        return;
+    }
+
+    setTimeout(() => {
+        csl.processTransactions();
+        updateAnimation();
+
+        // Recursively call the function after 3 seconds if the queue is not empty
+        if (!csl.isEmpty()) {
+            processTransactionsWithDelay();
+        }
+    }, 2500); // Delay of 3 seconds (3000 milliseconds)
+}
+
+// Function to generate a random integer between min and max (inclusive)
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Function to generate a client name
+function generateClientName() {
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const num = getRandomInt(1, 9999);
+    const letterIndex = num % 26; // Generate a letter index from 0 to 25
+    const letter = alphabet.charAt(letterIndex);
+    return `Client ${letter}${num}`;
+}
+
+// Function to insert clients into the circular singly linked list
+function insertClientsWithProbability(csl) {
+    // Generate a random number between 1 and 100
+    const probability = Math.floor(Math.random() * 100) + 1;
+
+    // Add a client with a probability of 33%
+    if (probability <= 33) {
+        const clientName = generateClientName();
+        const transactions = getRandomInt(1, 15);
+        csl.insertAtEnd(clientName, transactions);
+        console.log(`Added client: ${clientName}, Transactions: ${transactions}`);
+    } else {
+        console.log("No client added in this step.");
+    }
+}
+
+// Example usage:
+csl.insertAtEnd("Client A1", 1);
+csl.insertAtEnd("Client B2", 7);
+csl.insertAtEnd("Client C3", 2);
+csl.insertAtEnd("Client D4", 9);
+csl.insertAtEnd("Client E5", 7);
+csl.insertAtEnd("Client F6", 2);
+
+// Initial animation update
+updateAnimation();
+
+// Start processing transactions with delay
+processTransactionsWithDelay();
