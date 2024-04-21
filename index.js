@@ -1,11 +1,9 @@
-//Implementation of the Circular Doubly Linked List
-
+//***Start of the implementation of the Circular Singly Linked List***
 //Node class
 class Node {
     constructor(data) {
         this.data = data; //data that the node contains
         this.next = null; //pointer to the next node
-        
     }
     getNext() {
         return this.next;
@@ -17,7 +15,6 @@ class Node {
         return this.data;
     }
 }
-
 //There are 2 types of nodes:
 //Client Node
 class ClientNode extends Node {
@@ -26,11 +23,9 @@ class ClientNode extends Node {
         this.tranNum = tranNum; //Contains the number of transactions the client needs the cashier to process
         this.color = getRandomColor();
     }
-    //Gets the number of transactions the client needs the cashier to process
     getTranNumb() {
         return this.tranNum;
     }
-    //Sets the number of transactions the client needs the cashier to process
     setTranNumb(tranNum) {
         this.tranNum = tranNum;
     }
@@ -44,7 +39,6 @@ class ClientNode extends Node {
         }
     }
 }
-
 //Cashier Node
 class CashierNode extends Node {
     constructor(data, maxTansNumber) {
@@ -55,60 +49,53 @@ class CashierNode extends Node {
         return this.maxTranNumber;
     }
 }
-
 // CircularSinglyLinkedList class
 class CircularSinglyLinkedList {
     constructor() {
         this.head = new CashierNode("Cashier", 5); //Max number of transactions per client
         this.tail = null;
     }
-
+    // Method to check if the queue is empty (No clients)
     isEmpty() {
         return this.tail === null;
     }
-
     processTransactions() {
         let client = this.head.next;
         if (client == this.head) {
             console.log("Queue is empty!");
         } else {
             let tranNumber = client.getTranNumb();
-            console.log(client.getData());
-
             let actualClient = client.getData();
+            /* 
             let showText = document.getElementById("actualClient");
             showText.textContent = actualClient;
-            
-
-            console.log("Number of transactions " + client.getTranNumb());
             let numTransactions = client.getTranNumb() + " Transactions left";
             showText = document.getElementById("numTransactions");
             showText.textContent = numTransactions;
-            
+            */
             let maxTranNumber = this.head.getMaxTranNumb();
             if (tranNumber > maxTranNumber) {
                 client.removeTransactions(maxTranNumber);
                 tranNumber -= maxTranNumber;
                 this.moveFirstToEnd();
-                console.log(maxTranNumber + " transactions were processed, " 
-                + tranNumber + " transactions remaining. Client moved to end of queue");
 
+                /*
                 let queueState = maxTranNumber + " transactions were processed, " 
                 + tranNumber + " transactions remaining. Client moved to end of queue";
                 let showText = document.getElementById("queueState");
                 showText.textContent = queueState;
+                */
             } else {
                 client.removeTransactions(tranNumber);
                 this.deleteAtStart();
-                console.log("All " + tranNumber + " transactions were processed, client removed");
-
+                /*
                 let queueState = "All " + tranNumber + " transactions were processed, client removed";
                 let showText = document.getElementById("queueState");
                 showText.textContent = queueState;
+                */
             }
         }
     }
-
     insertAtEnd(data, tranNum) {
         const newNode = new ClientNode(data, tranNum);
         if (this.isEmpty()) {
@@ -125,8 +112,6 @@ class CircularSinglyLinkedList {
             newNode.setNext(this.head);
         }
     }
-
-    //missing consideration when deleting last client
     deleteAtStart() {
         if (this.isEmpty()) {
             console.log("List is empty");
@@ -140,7 +125,6 @@ class CircularSinglyLinkedList {
         firstNode.setNext(null);
         this.head.setNext(nextNode);
     }
-
     moveFirstToEnd() {
         if (this.isEmpty()) {
             console.log("List is empty");
@@ -161,13 +145,12 @@ class CircularSinglyLinkedList {
         firstNode.setNext(this.head);
         this.tail = firstNode;
     }
-
+    // Method to display the queue in console - (debugging tool)
     display() {
         if (this.isEmpty()) {
             console.log("List is empty");
             return;
         }
-
         let current = this.head.next;
         do {
             if (current instanceof ClientNode) {
@@ -176,7 +159,7 @@ class CircularSinglyLinkedList {
             }
         } while (current !== this.head);
     }
-
+    // Not used
     nodeCount() {
         let nodesNumber = 0;
         let current = this.head;
@@ -189,20 +172,120 @@ class CircularSinglyLinkedList {
             current = current.next;
         } while (current !== this.head);
         return nodesNumber;
-
     }
 }
+//***End of the implementation of the Circular Singly Linked List***
 
-// Create a CircularSinglyLinkedList instance
-const csl = new CircularSinglyLinkedList();
-
-//Function to get a rando color for the clients
+//***Start of support methods*** 
+//Function to get a random color for each client
 function getRandomColor() {
-    const colors = ["#c1121f","#fdf0d5","#fb5607","#80ffdb","#7400b8","#ccff33","#006400","#ff9e00","#ffff3f","#17c3b2","#ff595e", "#ffca3a", "#38b000", "#1982c4", "#6a4c93"];
+    const colors = [
+        "#7400b8ff",
+        "#6930c3ff",
+        "#5e60ceff",
+        "#5390d9ff",
+        "#4ea8deff",
+        "#48bfe3ff",
+        "#56cfe1ff",
+        "#64dfdfff",
+        "#72efddff",
+        "#80ffdbff",
+        "#ff0a54ff",
+        "#ff477eff",
+        "#ff5c8aff",
+        "#ff7096ff",
+        "#ff85a1ff",
+        "#ff99acff",
+        "#fbb1bdff",
+        "#f9bec7ff",
+        "#f7cad0ff",
+        "#fae0e4ff",
+        "#007f5fff",
+        "#2b9348ff",
+        "#55a630ff",
+        "#80b918ff",
+        "#aacc00ff",
+        "#bfd200ff",
+        "#d4d700ff",
+        "#dddf00ff",
+        "#eeef20ff",
+        "#ffff3fff",
+        "#ff7b00ff",
+        "#ff8800ff",
+        "#ff9500ff",
+        "#ffa200ff",
+        "#ffaa00ff",
+        "#ffb700ff",
+        "#ffc300ff",
+        "#ffd000ff",
+        "#ffdd00ff",
+        "#ffea00ff"
+    ];
     const randomIndex = Math.floor(Math.random() * colors.length);
     return colors[randomIndex];
 }
+// Function to generate a random integer between min and max (inclusive)
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+// Function to generate a client name
+function generateClientName() {
+    const names = [
+        // Characters from Kaido's crew
+        "Kaido",
+        "King",
+        "Queen",
+        "Jack",
+        "Kaido's All-Stars",
+        
+        // Characters from Luffy's crew
+        "Monkey D. Luffy",
+        "Roronoa Zoro",
+        "Nami",
+        "Usopp",
+        "Sanji",
+        "Tony Tony Chopper",
+        "Nico Robin",
+        "Franky",
+        "Brook",
+        "Jinbe",
+        
+        // Characters from Big Mom's crew
+        "Charlotte Linlin (Big Mom)",
+        "Charlotte Katakuri",
+        "Charlotte Smoothie",
+        "Charlotte Cracker",
+        "Charlotte Perospero",
+        "Charlotte Compote",
+        "Charlotte Daifuku",
+        "Charlotte Oven",
+        "Charlotte Opera",
+        "Charlotte Mont-d'Or",
+        "Charlotte Galette",
+        "Charlotte Brûlée",
+        "Charlotte Pudding",
+        
+        // Characters from Shanks' crew
+        "Shanks",
+        "Benn Beckman",
+        "Lucky Roo",
+        "Yasopp",
+        
+        // Characters from Blackbeard's (Teach's) crew
+        "Marshall D. Teach (Blackbeard)",
+        "Jesus Burgess",
+        "Shiliew",
+        "Van Augur",
+        "Laffitte",
+        "Doc Q",
+        "Stronger"
+    ];
+    const randomIndex = Math.floor(Math.random() * names.length);
+    return names[randomIndex];
+}
+//***End of support methods*** 
 
+//***Start of animation methods*** 
 // Function to update the animation display
 function updateAnimation() {
     const animationContainer = document.getElementById("animation-container");
@@ -211,7 +294,7 @@ function updateAnimation() {
     // Add the cashier box
     const cashierBox = document.createElement("div");
     cashierBox.classList.add("box", "cashier-box");
-    cashierBox.textContent = "Cashier";
+    cashierBox.textContent = "Gol D. Roger";
     animationContainer.appendChild(cashierBox);
 
     // Display client boxes
@@ -228,66 +311,48 @@ function updateAnimation() {
         current = current.next;
     }
 }
+//***End of animation methods*** 
 
+//***Start of the Pocessing Simulation Methods***
 // Function to process transactions with a delay
 function processTransactionsWithDelay() {
-
     //insertClientsWithProbability(csl);
-
     if (csl.isEmpty()) {
         console.log("Queue is empty");
         return;
     }
-
     setTimeout(() => {
         csl.processTransactions();
         updateAnimation();
-
-        // Recursively call the function after 2.5 seconds if the queue is not empty
+        // Recursively call the function after 2 seconds if the queue is not empty
         if (!csl.isEmpty()) {
             processTransactionsWithDelay();
         }
-    }, 2500); // Delay of 2.5 seconds (2500 milliseconds)
+    }, 2000); // Delay of 2 seconds (2500 milliseconds)
 }
-
-// Function to generate a random integer between min and max (inclusive)
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-// Function to generate a client name
-function generateClientName() {
-    const names = ["Monkey D. Luffy", "Zoro", "Nami", "Usopp", "Sanji", "Tony Tony Chopper", "Nico Robin", "Franky", "Brook", "Jinbe"];
-    const randomIndex = Math.floor(Math.random() * names.length);
-    return names[randomIndex];
-}
-
-// Function to insert clients into the circular singly linked list
+// Function to insert clients into the queue with a 33% probability
 function insertClientsWithProbability(csl) {
     // Generate a random number between 1 and 100
     const probability = Math.floor(Math.random() * 100) + 1;
-
     // Add a client with a probability of 33%
     if (probability <= 33) {
         const clientName = generateClientName();
         const transactions = getRandomInt(1, 15);
         csl.insertAtEnd(clientName, transactions);
-        console.log(`Added client: ${clientName}, Transactions: ${transactions}`);
-
+        /*
         let newClientsAdd = `Added client: ${clientName}, Transactions: ${transactions}`;
         let showText = document.getElementById("newClientsAdd");
         showText.textContent = newClientsAdd;
-
-
+        */
     } else {
         console.log("No client added in this step.");
-
+        /*
         let newClientsAdd = "No client added in this step.";
         let showText = document.getElementById("newClientsAdd");
         showText.textContent = newClientsAdd;
+        */
     }
 }
-
 // Function to execute insertClientsWithProbability in parallel to processTransactionsWithDelay
 async function executeParallelOperations() {
     // Execute insertClientsWithProbability in parallel
@@ -297,24 +362,29 @@ async function executeParallelOperations() {
         }, 2500);
         resolve();
     });
-
     // Execute processTransactionsWithDelay
     await processTransactionsWithDelay();
-
     // Wait for the insertionPromise to resolve
     await insertionPromise;
 }
+//Function to populate the starting queue
+function createRandomClientList(csl) {
+    const numClients = getRandomInt(5, 10);
+    for (let i = 0; i < numClients; i++) {
+        const clientName = generateClientName();
+        const transactions = getRandomInt(1, 15);
+        csl.insertAtEnd(clientName, transactions);
+    }
+}
+//***End of the Pocessing Simulation Methods***
 
-// Example usage:
-csl.insertAtEnd("Zoro", 1);
-csl.insertAtEnd("Ussop", 7);
-csl.insertAtEnd("Nami", 2);
-csl.insertAtEnd("Monkey D. Luffy", 9);
-csl.insertAtEnd("Nico Robin", 7);
-csl.insertAtEnd("Jinbe", 2);
-
+//***Start of Example Execution***
+// Create a CircularSinglyLinkedList instance
+const csl = new CircularSinglyLinkedList();
+// Initial queue
+createRandomClientList(csl);
 //Initial Animation Update
 updateAnimation();
-
 // Execution
 executeParallelOperations();
+//***End of Example Execution***
