@@ -24,6 +24,7 @@ class ClientNode extends Node {
     constructor(data, tranNum) {
         super(data); 
         this.tranNum = tranNum; //Contains the number of transactions the client needs the cashier to process
+        this.color = getRandomColor();
     }
     //Gets the number of transactions the client needs the cashier to process
     getTranNumb() {
@@ -195,6 +196,13 @@ class CircularSinglyLinkedList {
 // Create a CircularSinglyLinkedList instance
 const csl = new CircularSinglyLinkedList();
 
+//Function to get a rando color for the clients
+function getRandomColor() {
+    const colors = ["#c1121f","#fdf0d5","#fb5607","#80ffdb","#7400b8","#ccff33","#006400","#ff9e00","#ffff3f","#17c3b2","#ff595e", "#ffca3a", "#38b000", "#1982c4", "#6a4c93"];
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
+}
+
 // Function to update the animation display
 function updateAnimation() {
     const animationContainer = document.getElementById("animation-container");
@@ -212,7 +220,9 @@ function updateAnimation() {
         const clientBox = document.createElement("div");
         clientBox.classList.add("box");
         if (current instanceof ClientNode) {
-            clientBox.textContent = `${current.getData()} (${current.getTranNumb()})`;
+            clientBox.innerHTML = `${current.getData()} <br> #Transactions:${current.getTranNumb()}`;
+            clientBox.style.backgroundColor = current.color;
+            clientBox.style.borderColor = current.color;
         }
         animationContainer.appendChild(clientBox);
         current = current.next;
@@ -222,7 +232,7 @@ function updateAnimation() {
 // Function to process transactions with a delay
 function processTransactionsWithDelay() {
 
-    insertClientsWithProbability(csl);
+    //insertClientsWithProbability(csl);
 
     if (csl.isEmpty()) {
         console.log("Queue is empty");
@@ -233,11 +243,11 @@ function processTransactionsWithDelay() {
         csl.processTransactions();
         updateAnimation();
 
-        // Recursively call the function after 3 seconds if the queue is not empty
+        // Recursively call the function after 2.5 seconds if the queue is not empty
         if (!csl.isEmpty()) {
             processTransactionsWithDelay();
         }
-    }, 2500); // Delay of 3 seconds (3000 milliseconds)
+    }, 2500); // Delay of 2.5 seconds (2500 milliseconds)
 }
 
 // Function to generate a random integer between min and max (inclusive)
@@ -247,11 +257,9 @@ function getRandomInt(min, max) {
 
 // Function to generate a client name
 function generateClientName() {
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const num = getRandomInt(1, 9999);
-    const letterIndex = num % 26; // Generate a letter index from 0 to 25
-    const letter = alphabet.charAt(letterIndex);
-    return `Client ${letter}${num}`;
+    const names = ["Monkey D. Luffy", "Zoro", "Nami", "Usopp", "Sanji", "Tony Tony Chopper", "Nico Robin", "Franky", "Brook", "Jinbe"];
+    const randomIndex = Math.floor(Math.random() * names.length);
+    return names[randomIndex];
 }
 
 // Function to insert clients into the circular singly linked list
@@ -280,19 +288,33 @@ function insertClientsWithProbability(csl) {
     }
 }
 
+// Function to execute insertClientsWithProbability in parallel to processTransactionsWithDelay
+async function executeParallelOperations() {
+    // Execute insertClientsWithProbability in parallel
+    const insertionPromise = new Promise(resolve => {
+        setInterval(() => {
+            insertClientsWithProbability(csl);
+        }, 2500);
+        resolve();
+    });
 
+    // Execute processTransactionsWithDelay
+    await processTransactionsWithDelay();
+
+    // Wait for the insertionPromise to resolve
+    await insertionPromise;
+}
 
 // Example usage:
-csl.insertAtEnd("Client A1", 1);
-csl.insertAtEnd("Client B2", 7);
-csl.insertAtEnd("Client C3", 2);
-csl.insertAtEnd("Client D4", 9);
-csl.insertAtEnd("Client E5", 7);
-csl.insertAtEnd("Client F6", 2);
-csl.nodeCount();
+csl.insertAtEnd("Zoro", 1);
+csl.insertAtEnd("Ussop", 7);
+csl.insertAtEnd("Nami", 2);
+csl.insertAtEnd("Monkey D. Luffy", 9);
+csl.insertAtEnd("Nico Robin", 7);
+csl.insertAtEnd("Jinbe", 2);
 
-// Initial animation update
+//Initial Animation Update
 updateAnimation();
 
-// Start processing transactions with delay
-processTransactionsWithDelay();
+// Execution
+executeParallelOperations();

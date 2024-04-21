@@ -1,34 +1,35 @@
 /* CSS styles for the boxes */
 body{
-  background-color: #EBDBDB;
+  background-color: #caf0f8;
   font-family: "Arial Rounded MT Bold", sans-serif; 
 }
 
 .topLine{
-  background-color: #0095DD; 
+  background-color: #00b4d8; 
   height: 5px;
   width: 100%;
   margin: -10px -20px 0;
   padding: 10px 20px; 
   }
   
-  .topDiv{
-  color: #FEF2BF; 
-  background-color: #0095DD; 
-  height: 25px;
-  width: 150px;
-  right: 20px;
-  top: 10px;
-  float: right;
-  position: absolute;
-  font-weight: bold; 
-  font-size: 20px; 
-  border-radius: 7px;
-  text-align: center;
+  .topDiv {
+    color: #ffffff; 
+    background-color: #023e8a; 
+    height: 35px;
+    width: 150px;
+    right: 20px;
+    top: 10px;
+    float: right;
+    position: absolute;
+    font-weight: bold; 
+    font-size: 20px; 
+    border-radius: 7px;
+    text-align: center;
+    line-height: 35px; /* Vertical alignment */
   }
 
 .information{  
-  background-color: #0095DD;
+  background-color: #00b4d8;
   border: 2px solid #000000;
   width: 1000px;
   height: 300px;
@@ -43,8 +44,8 @@ body{
 }
 
 .information > .info_box{
-background-color: #FEF2BF;
-border: 2px solid #636363;
+background-color: #caf0f8;
+border: 2px solid #0077b6;
 width: calc(70% - 27px);
 height: calc(20% - 22px);
 border-radius: 10px;
@@ -54,8 +55,8 @@ gap: 10px;
 }
 
 .information > .label{
-background-color: #FEF2BF;
-border: 2px solid #636363;
+background-color: #caf0f8;
+border: 2px solid #0077b6;
 width: calc(30% - 32px);
 height: calc(20% - 22px);
 border-radius: 10px;
@@ -67,10 +68,10 @@ gap: 10px;
 }
 
 .box {
-  background-color: #ccc;
-  border: 2px solid #636363;
+  background-color: #0077b6;
+  border: 2px solid #0077b6;
   width: 150px;
-  height: 50px;
+  height: 100px;
   margin: 5px;
   display: inline-block;
   text-align: center;
@@ -80,9 +81,18 @@ gap: 10px;
 }
 
 .cashier-box {
-  background-color: #0095DD;
-  border: 2px solid #000000;
+  background-color: #ffb703;
+  border: 2px solid #fb8500;
+  border-width: 5px;
   border-radius: 10px;
   margin-top: 25px;
+  margin-right: 50px;
   font-weight: bold;
+}
+
+#animation-container {
+  display: flex;
+  align-items: center; /* Center vertically */
+  justify-content: flex-start; /* Align content to the left horizontally */
+  height: 200px; /* Set a fixed height for the container */
 }
