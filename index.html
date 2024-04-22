@@ -1,34 +1,60 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-
+<html lang="en">
+    
 <head>
-  <meta charset="utf-8">
-  <title>Bank Queue</title>
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Bank Queue Animation</title>
 </head>
 
 <body>
-  <h1 id="level-title">Bank Queue</h1>
-  <div class="container">
-    <div class="row">
+    <header class="topLine">
+        <div class="topDiv">Shinsekai</div>
+    </header>
 
-      <div type="button" id="green" class="btn green"></div>
-      <div type="button" id="red" class="btn red"></div>
+    <div class="information">
+        <div class = "label">
+            <p>Actual client:</p>
+          </div>  
+          <div class = "info_box">
+            <p id = "actualClient"></p>
+        </div>  
+
+        <div class = "label">
+            <p>Number of transactions:</p>
+          </div>  
+          <div class = "info_box">
+            <p id = "numTransactions"></p>
+        </div>  
+
+        <div class = "label">
+          <p class = "label_p">Actions executed by the cashier:</p>
+        </div>  
+        <div class = "info_box">
+          <p id = "queueState"></p>
+        </div>  
+
+        <div class="label">
+          <p>New clients:</p>
+        </div>  
+        <div class = "info_box">
+          <p id="newClientsAdd"></script></p>
+        </div>  
+
+        <div class="label">
+          <p>Max number of transactions:</p>
+        </div>  
+        <div class = "info_box">
+          <p id = "maxTransactions"></p>
+        </div>  
 
     </div>
 
-    <div class="row">
-
-      <div type="button" id="yellow" class="btn yellow"></div>
-      <div type="button" id="blue" class="btn blue"></div>
-
+    <div id="animation-container">
+        <div id="cashier-box" class="box cashier-box">Gol D. Roger</div>
     </div>
 
-  </div>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="index.js"></script>
+    <script src="index.js"></script>
 </body>
-
 </html>
