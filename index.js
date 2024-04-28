@@ -18,24 +18,71 @@ class Node {
 //There are 2 types of nodes:
 //Client Node
 class ClientNode extends Node {
-    constructor(data, tranNum) {
+    constructor(data, timeOfArrival, burstNumber) {
         super(data);
-        this.tranNum = tranNum; //Contains the number of transactions the client needs the cashier to process
+        this.burstNumber = burstNumber; //Contains the number of transactions the client needs the cashier to process
+        this.timeOfArrival = timeOfArrival; // Contains the creation time of a process
         this.color = getRandomColor();
+        let startTime;
+        let finalTime; //startTime + burstNumber
+        let returnTime; // finalTime - timeOfArrival
+        let waitTime; // returnTime -  burstNumber
     }
-    getTranNumb() {
-        return this.tranNum;
+    getTimeOfArrival() {
+        return this.timeOfArrival;
     }
-    setTranNumb(tranNum) {
-        this.tranNum = tranNum;
+
+    setTimeOfArrival(timeOfArrival) {
+        this.timeOfArrival = timeOfArrival;
+    }    
+
+    getStartTime() {
+        return this.startTime;
     }
+
+    setStartTime(burstNumber) {
+        this.startTime = this.finalTime - burstNumber;
+    } 
+
+    getBurstNumber() {
+        return this.burstNumber;
+    }
+
+    setBurstNumber(burstNumber) {
+        this.burstNumber = burstNumber;
+    }
+    
+    getFinalTime() {
+        return this.finalTime;
+    }
+
+    setFinalTime(burstNumber) {
+        this.finalTime = burstNumber;
+    } 
+    
+    getReturnTime() {
+        return this.returnTime;
+    }
+
+    setReturnTime(finalTime, startTime) {
+        this.returnTime = finalTime - startTime;
+    }    
+    
+    getWaitTime() {
+        return this.waitTime;
+    }
+
+    setWaitTime(returnTime, burst) {
+        this.waitTime = returnTime - burst;
+    }
+
     //Removes from the number of transactions the client needs the cashier to process
     removeTransactions(num) {
         if(num <= 0) return;
-        if(this.tranNum <= num) {
-            this.tranNum = 0;
+        if(this.burstNumber <= num) {
+            this.burstNumber = 0;
         } else {
-            this.tranNum -= num;
+            this.burstNumber -= num;
         }
     }
 }
@@ -43,42 +90,94 @@ class ClientNode extends Node {
 class CashierNode extends Node {
     constructor(data, maxTansNumber) {
         super(data);
-        this.maxTranNumber = maxTansNumber; //The maximum number of transactions that can process per client each time
+        this.maxburstNumberber = maxTansNumber; //The maximum number of transactions that can process per client each time
     }
-    getMaxTranNumb() {
-        return this.maxTranNumber;
+    
+    getMaxburstNumberb() {
+        return this.maxburstNumberber;
     }
 }
+// Global variable to random probability
+let globalRandom = null;
+
+
+// Function to update the global random variable
+function updateGlobalRandom() {
+    globalRandom = getRandomInt(1, 100);
+}
+
+updateGlobalRandom();
 // CircularSinglyLinkedList class
+
+let processTransactionscounter = (globalRandom % 8 + 1) - 2; //in conjunction with createRandomClientList (change both)  returns the initial runtime value
+let burstSum = 0; //Used to calculate the start and final time
+
 class CircularSinglyLinkedList {
     constructor() {
-        this.head = new CashierNode("Cashier", 5); //Max number of transactions per client
+        this.head = new CashierNode("Cashier", 20); //Max number of transactions per client
         this.tail = null;
     }
     // Method to check if the queue is empty (No clients)
     isEmpty() {
         return this.tail === null;
     }
+
+    // Method to skips a process node (use to avoid elimination)
+    defineCurrent(){
+        let currentNode = this.head.next;
+        if(currentNode.getBurstNumber() > 0){
+            return currentNode;
+        }else{
+            try {
+                while(currentNode.getBurstNumber() <= 0){
+                    currentNode = currentNode.next;
+                }
+            } catch (error) {
+                currentNode = this.tail;
+            }
+            return currentNode;
+        }
+    }
+
     processTransactions() {
-        let client = this.head.next;
+        //let client = this.head.next; 
+        let client = this.defineCurrent(); //To avoid the node elimination
         if (client == this.head) {
             console.log("Queue is empty!");
         } else {
-            let tranNumber = client.getTranNumb();
-            let actualClient = client.getData();
-            let maxTranNumber = this.head.getMaxTranNumb();
-            if (tranNumber > maxTranNumber) {
-                client.removeTransactions(maxTranNumber);
-                tranNumber -= maxTranNumber;
-                this.moveFirstToEnd();
+            let burstNumberber = client.getBurstNumber();
+            //let actualClient = client.getData();
+            let maxburstNumberber = this.head.getMaxburstNumberb();
+            let burstSum = this.burstSum(burstNumberber);
+            client.setFinalTime(burstSum);
+            client.setStartTime(burstNumberber);
+            client.setReturnTime(client.getFinalTime(), client.getTimeOfArrival());
+            client.setWaitTime(client.getReturnTime(), client.getBurstNumber());
+            processTransactionscounter++;
+            console.log("current time: " + processTransactionscounter); 
+            if (burstNumberber > maxburstNumberber) {
+                client.removeTransactions(maxburstNumberber);
+                burstNumberber -= maxburstNumberber;
+                //this.moveFirstToEnd();
             } else {
-                client.removeTransactions(tranNumber);
-                this.deleteAtStart();
+                client.removeTransactions(burstNumberber);
+                //this.deleteAtStart();
+                this.defineCurrent();
             }
         }
     }
-    insertAtEnd(data, tranNum) {
-        const newNode = new ClientNode(data, tranNum);
+
+    getProcessTransactionsCounter() {
+        return processTransactionscounter;
+    }
+
+    burstSum(burstNumber){
+        burstSum = burstNumber + burstSum;
+        return burstSum;
+    }
+
+    insertAtEnd(data, arrivalTime, burstNumber) {
+        const newNode = new ClientNode(data, arrivalTime, burstNumber);
         if (this.isEmpty()) {
             this.tail = newNode;
             this.head.setNext(newNode);
@@ -93,6 +192,7 @@ class CircularSinglyLinkedList {
             newNode.setNext(this.head);
         }
     }
+
     deleteAtStart() {
         if (this.isEmpty()) {
             console.log("List is empty");
@@ -106,6 +206,9 @@ class CircularSinglyLinkedList {
         firstNode.setNext(null);
         this.head.setNext(nextNode);
     }
+
+
+
     moveFirstToEnd() {
         if (this.isEmpty()) {
             console.log("List is empty");
@@ -135,7 +238,9 @@ class CircularSinglyLinkedList {
         let current = this.head.next;
         do {
             if (current instanceof ClientNode) {
-                console.log(current.getData() + ": " + current.getTranNumb());
+                console.log(current.getData() + ": " + current.getTimeOfArrival() + ": "  
+                + current.getBurstNumber() + "; " + current.getStartTime() + "; " 
+                + current.getFinalTime() + "; " + current.getReturnTime() + "; " + current.getWaitTime());
                 current = current.next;
             }
         } while (current !== this.head);
@@ -213,7 +318,7 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 // Function to generate a client name
-function generateClientName() {
+/*function generateClientName() {
     const names = [
         // Characters from Kaido's crew
         "Kaido",
@@ -266,6 +371,31 @@ function generateClientName() {
     ];
     const randomIndex = Math.floor(Math.random() * names.length);
     return names[randomIndex];
+}*/
+let letterCounter = 0; 
+
+let auxiliarCounter = 0;
+
+function generateClientName() {
+    if (auxiliarCounter === 0 && letterCounter < 26) {
+        let letter = String.fromCharCode('A'.charCodeAt(0) + letterCounter % 26);
+        letterCounter++;
+        return letter;
+    } else if (letterCounter % 26 === 0) {
+        let letter = String.fromCharCode('A'.charCodeAt(0) + letterCounter % 26);
+        letterCounter++;
+        auxiliarCounter++;
+        let mod = auxiliarCounter % 26;
+        let letterNumber = mod.toString();
+        let compoundLetter = letter + letterNumber;
+        return compoundLetter;
+    } else {
+        let letter = String.fromCharCode('A'.charCodeAt(0) + letterCounter % 26);
+        letterCounter++;
+        let letterNumber = auxiliarCounter.toString();
+        let compoundLetter = letter + letterNumber;
+        return compoundLetter;
+    }
 }
 //***End of support methods***
 
@@ -290,7 +420,7 @@ function updateAnimation() {
         const clientBox = document.createElement("div");
         clientBox.classList.add("box");
         if (current instanceof ClientNode) {
-            clientBox.innerHTML = `${current.getData()} <br> #Transactions:${current.getTranNumb()}`;
+            clientBox.innerHTML = `${current.getData()} <br> #Transactions:${current.getBurstNumber()}`;
             clientBox.style.backgroundColor = current.color;
             clientBox.style.borderColor = current.color;
            
@@ -311,35 +441,34 @@ function processTransactionsWithDelay() {
         console.log("Queue is empty");
         return;
     }
-    setTimeout(() => {
+    /*setTimeout(() => {
         csl.processTransactions();
         updateAnimation();
         // Recursively call the function after 2 seconds if the queue is not empty
         if (!csl.isEmpty()) {
             processTransactionsWithDelay();
+            csl.display();
+        }
+    }, 2000); // Delay of 2 seconds (2500 milliseconds)*/
+
+    setTimeout(() => {
+        csl.processTransactions();
+        updateTable();
+        updateAnimation();
+        // Recursively call the function after 2 seconds if the queue is not empty
+        if (csl.tail.getBurstNumber() != 0) {
+            processTransactionsWithDelay();
+            csl.display();
         }
     }, 2000); // Delay of 2 seconds (2500 milliseconds)
 }
-
-
-// Global variable to random probability
-let globalRandom = null;
-
-
-// Function to update the global random variable
-function updateGlobalRandom() {
-    globalRandom = getRandomInt(1, 100);
-}
-
-
-updateGlobalRandom();
 
 
 const intervalID = setInterval(updateGlobalRandom, 2500);
 
 
 // Function to insert clients into the queue with a 33% probability
-function insertClientsWithProbability(csl) {
+/*function insertClientsWithProbability(csl) {
     // Generate a random number between 1 and 100
     const probability =globalRandom;
     // Add a client with a probability of 33%
@@ -350,8 +479,22 @@ function insertClientsWithProbability(csl) {
     } else {
         console.log("No client added in this step.");
     }
-}
+}*/
 
+function insertClientsWithProbability(csl) {
+    // Generar un número aleatorio entre 1 y 100
+    let probability = Math.floor(Math.random() * 100) + 1;
+
+    // Agregar un cliente con una probabilidad del 33%
+    if (probability <= 33) {
+        let letter = generateClientName();
+        let timeOfArrival = (csl.getProcessTransactionsCounter()) + 1;
+        let burstNumber = Math.floor(Math.random() * 20) + 1;
+        csl.insertAtEnd(letter, timeOfArrival, burstNumber);
+    } else {
+        console.log("No client added in this step.");
+    }
+}
 
 // Function to execute insertClientsWithProbability in parallel to processTransactionsWithDelay
 async function executeParallelOperations() {
@@ -369,24 +512,22 @@ async function executeParallelOperations() {
 }
 //Function to populate the starting queue
 function createRandomClientList(csl) {
-    const numClients = getRandomInt(5, 10);
+    const numClients = globalRandom % 8 + 1; //in conjunction with processTransactionscounter (change both) generates the initial clients 
     for (let i = 0; i < numClients; i++) {
         const clientName = generateClientName();
-        const transactions = getRandomInt(1, 15);
-        csl.insertAtEnd(clientName, transactions);
+        const burst = getRandomInt(1, 15);
+        const timeOfArrival = i;
+        csl.insertAtEnd(clientName, timeOfArrival, burst);
     }
 }
 //***End of the Pocessing Simulation Methods***
-
-
-
 
 //***Start of the printing information Method***
 function printOnScreen() {
     let past = csl.tail;
     let current = csl.head.next
-    let tranNumber = current.getTranNumb();
-    let maxTranNumber = csl.head.getMaxTranNumb();
+    let burstNumberber = current.getBurstNumber();
+    let maxburstNumberber = csl.head.getMaxburstNumberb();
     let showText;
    
    //Print on screen the actual client
@@ -395,33 +536,31 @@ function printOnScreen() {
    showText.textContent = actualClient;
    
    //Print on screen the umber of transactions
-   let numTransactions = tranNumber + " Actual transactions";
+   let numTransactions = burstNumberber + " Actual transactions";
    showText = document.getElementById("numTransactions");
    showText.textContent = numTransactions;
 
 
     //Print on screen the actions executed by the cashier
-    if (tranNumber > maxTranNumber) {
+    if (burstNumberber > maxburstNumberber) {
         setTimeout(function() {
-            let queueState = maxTranNumber + " transactions were processed, "
-        + (tranNumber - maxTranNumber)/*past.getTranNumb()/*tranNumber*/ + " transactions remaining. Client moved to end of queue";
+            let queueState = maxburstNumberber + " transactions were processed, "
+        + (burstNumberber - maxburstNumberber)/*past.getburstNumberb()/*burstNumberber*/ + " transactions remaining. Client moved to end of queue";
         let showText = document.getElementById("queueState");
         showText.textContent = queueState;;
         }, 2000);
     } else {
         setTimeout(function() {
-            let queueState = "All " + tranNumber + " transactions were processed, client removed";
+            let queueState = "All " + burstNumberber + " transactions were processed, client removed";
             let showText = document.getElementById("queueState");
             showText.textContent = queueState;
         }, 2000);
-
-
     }
 
 
     //Print on screen the New clients
     if (globalRandom <= 33) {
-        let newClientsAdd = `Added client: ${past.getData()}, Transactions: ${past.getTranNumb()}`;
+        let newClientsAdd = `Added client: ${past.getData()}, Transactions: ${past.getBurstNumber()}`;
         let showText = document.getElementById("newClientsAdd");
         showText.textContent = newClientsAdd;
        
@@ -433,12 +572,102 @@ function printOnScreen() {
 
 
     //Print on screen the max number of transactions
-    let maxTransactions = "The maximum number of transactions is " + maxTranNumber;
+    let maxTransactions = "The maximum number of transactions is " + maxburstNumberber;
     showText = document.getElementById("maxTransactions");
     showText.textContent = maxTransactions;
 }
 //***end of the printing information Methods***
 
+function updateTable(){
+    const tableContainer = document.getElementById("table-container");
+    tableContainer.innerHTML = ""; // Clear existing content
+
+    // Display client boxes
+    let current = csl.head.next;
+
+    const tableHeadProcess = document.createElement("div");
+    const tableHeadArrivalTime = document.createElement("div");
+    const tableHeadBurst = document.createElement("div");
+    const tableHeadStartTime = document.createElement("div");
+    const tableHeadFinalTime = document.createElement("div");
+    const tableHeadReturnTime = document.createElement("div");
+    const tableHeadWaitTime = document.createElement("div");
+
+    tableHeadProcess.classList.add("table-label");
+    tableHeadArrivalTime.classList.add("table-label");
+    tableHeadBurst.classList.add("table-label");
+    tableHeadStartTime.classList.add("table-label");
+    tableHeadFinalTime.classList.add("table-label");
+    tableHeadReturnTime.classList.add("table-label");
+    tableHeadWaitTime.classList.add("table-label");
+
+    tableHeadProcess.innerHTML = "Proceso";
+    tableHeadArrivalTime.innerHTML = "T llegada";
+    tableHeadBurst.innerHTML = "Rafaga";
+    tableHeadStartTime.innerHTML = "T comienzo";
+    tableHeadFinalTime.innerHTML = "T final";
+    tableHeadReturnTime.innerHTML = "T retorno";
+    tableHeadWaitTime.innerHTML = "T espera";
+
+    tableContainer.appendChild(tableHeadProcess);
+    tableContainer.appendChild(tableHeadArrivalTime);
+    tableContainer.appendChild(tableHeadBurst);
+    tableContainer.appendChild(tableHeadStartTime);
+    tableContainer.appendChild(tableHeadFinalTime);
+    tableContainer.appendChild(tableHeadReturnTime);
+    tableContainer.appendChild(tableHeadWaitTime);
+
+    while (current !== csl.head) {
+        const tableRowProcess = document.createElement("div");
+        const tableRowArrivalTime = document.createElement("div");
+        const tableRowBurst = document.createElement("div");
+        const tableRowStartTime = document.createElement("div");
+        const tableRowFinalTime = document.createElement("div");
+        const tableRowReturnTime = document.createElement("div");
+        const tableRowWaitTime = document.createElement("div");
+        
+        tableRowProcess.classList.add("table-process");
+        tableRowArrivalTime.classList.add("table-process");
+        tableRowBurst.classList.add("table-process");
+        tableRowStartTime.classList.add("table-process");
+        tableRowFinalTime.classList.add("table-process");
+        tableRowReturnTime.classList.add("table-process");
+        tableRowWaitTime.classList.add("table-process");
+        if (current instanceof ClientNode) {
+            tableRowProcess.innerHTML = current.getData();
+            tableRowProcess.style.backgroundColor = current.color;
+
+            tableRowArrivalTime.innerHTML = current.getTimeOfArrival();
+            tableRowArrivalTime.style.backgroundColor = current.color;
+
+            tableRowBurst.innerHTML = current.getBurstNumber();
+            tableRowBurst.style.backgroundColor = current.color;
+
+            tableRowStartTime.innerHTML = current.getStartTime();
+            tableRowStartTime.style.backgroundColor = current.color;
+
+            tableRowFinalTime.innerHTML = current.getFinalTime();
+            tableRowFinalTime.style.backgroundColor = current.color;
+
+            tableRowReturnTime.innerHTML = current.getReturnTime();
+            tableRowReturnTime.style.backgroundColor = current.color;
+
+            tableRowWaitTime.innerHTML = current.getWaitTime();
+            tableRowWaitTime.style.backgroundColor = current.color;
+        }
+        tableContainer.appendChild(tableRowProcess);
+        tableContainer.appendChild(tableRowArrivalTime);
+        tableContainer.appendChild(tableRowBurst);
+        tableContainer.appendChild(tableRowStartTime);
+        tableContainer.appendChild(tableRowFinalTime);
+        tableContainer.appendChild(tableRowReturnTime);
+        tableContainer.appendChild(tableRowWaitTime);
+        printOnScreen();
+
+        current = current.next;
+    }
+
+}
 
 //***Start of Example Execution***
 // Create a CircularSinglyLinkedList instance
@@ -447,10 +676,7 @@ const csl = new CircularSinglyLinkedList();
 createRandomClientList(csl);
 //Initial Animation Update
 updateAnimation();
+updateTable();
 // Execution
 executeParallelOperations();
 //***End of Example Execution***
-
-
-
-
